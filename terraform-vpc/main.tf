@@ -45,3 +45,35 @@ module "ec2" {
   instance_name       = "demo-ec2"
   associate_public_ip = true
 }
+
+module "sg_alb" {
+  source       = "./modules/sg"
+  name         = "alb"
+  vpc_id       = module.vpc.vpc_id
+  allowed_cidrs = ["0.0.0.0/0"]
+}
+
+module "sg_asg" {
+  source       = "./modules/sg"
+  name         = "asg"
+  vpc_id       = module.vpc.vpc_id
+  allowed_cidrs = ["0.0.0.0/0"]
+}
+
+module "asg" {
+  source             = "./modules/asg"
+  name               = "webapp"
+  ami_id              = "ami-077b630ef539aa0b5"   
+  instance_type      = "t3.micro"
+  subnet_ids         = module.vpc.private_subnet_ids
+  security_group_ids = [module.sg_alb.sg_id]
+  target_group_arns  = [module.alb.target_group_arn]
+}
+
+module "alb" {
+  source             = "./modules/alb"
+  name               = "webapp"
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.public_subnet_ids
+  security_group_ids = [module.sg_alb.sg_id]
+}
