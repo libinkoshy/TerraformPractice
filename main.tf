@@ -77,3 +77,11 @@ module "alb" {
   subnet_ids         = module.vpc.public_subnet_ids
   security_group_ids = [module.sg_alb.sg_id]
 }
+module "route53" {
+  source = "./modules/route53"
+
+  hosted_zone_id = "<your-hosted-zone-id>"
+  domain_name    = "app.yourdomain.com"
+  alias_name     = "<your-alb-dns-name>"
+  alias_zone_id  = "<your-alb-hosted-zone-id>"
+}
