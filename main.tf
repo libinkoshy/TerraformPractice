@@ -77,3 +77,13 @@ module "alb" {
   subnet_ids         = module.vpc.public_subnet_ids
   security_group_ids = [module.sg_alb.sg_id]
 }
+
+module "s3_bucket" {
+  source            = "./modules/s3"
+  bucket_name       = "my-terraform-s3-bucket-demo"
+  versioning_enabled = true
+  tags = {
+    Environment = "dev"
+    Project     = "terraform-demo"
+  }
+}
